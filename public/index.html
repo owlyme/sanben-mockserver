@@ -89,26 +89,6 @@
         </div>
 
         <script>
-            function createJson(array) {
-                return array
-                // return array.reduce((acc, data) => 
-                // {   
-                //     let value = null;
-                //     if ( data.data_type_value === "object") {
-                //         value = createJson(data.value)
-                //     } else if (data.data_type_value === "array") {
-                //         value = data.value.map(arr_item => createJson(arr_item))
-                //     } else {
-                //         value = data.value
-                //     }
-
-                //     return {
-                //         ...acc, 
-                //         [data.key]: value,
-                //         data_type_value: data.data_type_value
-                //     }
-                // }, {})
-            }
             const temp = {
                 key: null, 
                 value: null,
@@ -221,9 +201,19 @@
                     },
                     viewData() {
                         let url = this.api
-                        axios.get('/api-mock/' + this.api, {
-                            api: this.api,
-                            mockData: this.mockData
+                        let method = this.method.toLowerCase()
+                        let param = method === 'get' ? {
+                                param: {
+                                    api: this.api,
+                                    mockData: this.mockData
+                                }
+                            } :  {
+                                api: this.api,
+                                mockData: this.mockData
+                            };
+                            
+                        axios[method]('/api-mock/' + this.api, {
+                            ...param
                         }).then(res => {
                             console.log(res)
                         })

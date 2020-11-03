@@ -28,7 +28,21 @@ function createJson(array) {
 }
 
 router.post('/*', async ctx => {
+  let relativePath = ctx.url.replace(/\/api-mock\//, '')
+  // let filePath = relativePath.replace(/\//g, '_')
+  let filePath =resolve(relativePath)
+  const {type, data} = await fs.readJson(filePath)
+  let mockdata = null
+  if (type === "JSON") {
+    mockdata= createJson(data[0])
+  } else {
+    mockdata= data.map(createJson)
+  }
  
+  return (ctx.body = {
+    code: 1,
+    data: mockdata
+  });
 });
 
 router.get('/*', async ctx => {
