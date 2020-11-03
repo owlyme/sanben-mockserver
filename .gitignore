@@ -1,0 +1,11 @@
+/node_modules
+/.vscode
+/logs
+/cacheFiles
+# misc
+.DS_Store
+npm-debug.log
+package-lock.json
+yarn.lock
+yarn-debug.log
+yarn-error.log

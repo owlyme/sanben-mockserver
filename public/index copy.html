@@ -1,0 +1,252 @@
+<html>
+    <head>
+        <title>san ben</title>
+        <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <style>
+            .flex {
+            display: flex;
+            }
+            .flex-c {
+            display: flex;
+            justify-content: center;
+            }
+            .flex-b {
+            display: flex;
+            justify-content: space-between;
+            }
+            .flex-a {
+            display: flex;
+            justify-content: space-around;
+            }
+            .flex-end{
+            justify-content: flex-end;
+            }
+
+            .flex-middle {
+            display: flex;
+            align-items: center;
+            }
+
+            .flex-col {
+            display: flex;
+            flex-direction: column;
+            }
+
+            .flex-cm {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+            .flex-wrap{
+            flex-wrap: wrap;
+            }
+
+        </style>
+    </head>
+    <body>
+        hello sanben !!!
+        <div id="app">
+            <div>
+                <div>
+                    api接口：<input  v-model="api"  />
+                </div>
+                <div>
+                    接口数据：
+                    <ul>
+                        <li v-for="(item, index) in mockData" class="flex"  v-bind:key="index">
+                            <div><input v-model="item.key" /></div>
+                            <div>
+                                <input 
+                                    v-if="item.data_type_value !== 'array' && item.data_type_value !== 'object'"
+                                    v-model="item.value"
+                                 />
+                                 
+                                 <ul v-else-if="item.data_type_value === 'object'">
+                                    <li>data_type_value object</li>
+                                    <li v-for="(sub_item, sub_index) in (item.value || [])" class="flex"  v-bind:key="index">
+                                        <div><input v-model="sub_item.key" /></div>
+                                        <div>
+                                            <input 
+                                                v-model="sub_item.value"
+                                             />
+                                        </div>
+                                        <div>
+                                            <select v-model="sub_item.data_type_value">
+                                                <option value="string">String</option>
+                                                <option value="boolean">Boolean</option>
+                                                <option value="number">Number</option>
+                                                <option value="array">Array</option>
+                                                <option value="object">Map</option>
+                                            </select>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <button v-on:click="addProperty(item.value)">添加字段</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <select name="" id=""  v-on:change="(e) => onTypeChange(e, item, index)">
+                                    <option value="string">String</option>
+                                    <option value="boolean">Boolean</option>
+                                    <option value="number">Number</option>
+                                    <option value="array">Array</option>
+                                    <option value="object">Map</option>
+                                </select>
+                            </div>
+                        </li>
+                        <li>
+                            <button v-on:click="addProperty(mockData)">添加字段</button>
+                        </li>
+                        
+                    </ul>
+                </div>
+                
+                <div>
+                    <button v-on:click="createData">提交</button>
+                    <!-- <button v-on:click="modifyData">修改</button> -->
+                    <button v-on:click="viewData">查看数据</button>
+                </div>
+                <div>
+                    <data-list v-bind:keyValueList="mockData" />
+                </div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+
+        <script>
+            function createJson(array) {
+                return array.reduce((acc, data) => 
+                {   
+                    let value = null;
+                    if ( data.data_type_value === "object") {
+                        value = createJson(data.value)
+                    } else if (data.data_type_value === "array") {
+
+                    } else {
+                      let value = data.value
+                    }
+
+                    return {
+                        ...acc, 
+                        [data.key]: value,
+                        data_type_value: data.data_type_value
+                    }
+                }, {})
+            }
+            const temp = {
+                key: null, 
+                value: null,
+                data_type_value: 'string'
+            }
+
+            Vue.component('data-list', {
+                template: `
+                    <ul>
+                        <li v-for="(item, index) in (keyValueList || [])" class="flex"  v-bind:key="index">
+                            <div><input v-model="item.key" /></div>
+                            <div>
+                                <input 
+                                    v-if="item.data_type_value !== 'array' && item.data_type_value !== 'object'"
+                                    v-model="item.value"
+                                 />
+                                 
+                                <div v-else-if="item.data_type_value === 'object'">
+                                    <data-list :keyValueList="item.value" />
+                                </div>
+                            </div>
+                            <div>
+                                <select v-on:change="(e) => onTypeChange(e, item, index)">
+                                    <option value="string">String</option>
+                                    <option value="boolean">Boolean</option>
+                                    <option value="number">Number</option>
+                                    <option value="array">Array</option>
+                                    <option value="object">Map</option>
+                                </select>
+                            </div>
+                        </li>
+                        <li>
+                            <button v-on:click="addProperty(keyValueList)">添加字段</button>
+                        </li>
+                    </ul>
+                `,
+                
+                props: ['keyValueList'],
+                data() {
+                    return {}
+                },
+                created() {
+                    console.log(this.keyValueList)
+                },
+                methods: {
+                    addProperty(item) {
+                        item.push({...temp})
+                    },
+                    onTypeChange(e, item, index) {
+                        console.log(e.target.value)
+                        let type = e.target.value
+                        if (type === 'object') {
+                            item.data_type_value = "object"
+                            item.value = [
+                                {...temp}
+                            ]
+                        }
+                    }
+                }
+            })
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    mockData: [{...temp}],
+                    api: 'test',
+                },
+                methods: {
+                    createData() {
+                        axios.post('/api/create', {
+                            api: this.api,
+                            mockData: createJson(this.mockData)
+                            // mockData: this.mockData
+                        }).then(res => {
+                            console.log(res)
+                        })
+                    },
+                    modifyData() {
+                        console.log(this.message)
+                        axios.post('/api/create', {
+                            api: this.api,
+                            mockData: this.mockData
+                        }).then(res => {
+                            console.log(res)
+                        })
+                    },
+                    viewData() {
+                        let url = this.api
+                        axios.get('/api-mock/' + this.api, {
+                            api: this.api,
+                            mockData: this.mockData
+                        }).then(res => {
+                            console.log(res)
+                        })
+                    },
+                    addProperty(item) {
+                        item.push({...temp})
+                    },
+                    onTypeChange(e, item, index) {
+                        console.log(e.target.value)
+                        let type = e.target.value
+                        if (type === 'object') {
+                            item.data_type_value = "object"
+                            item.value = [
+                                {...temp}
+                            ]
+                        }
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

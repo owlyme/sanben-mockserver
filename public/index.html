@@ -1,0 +1,238 @@
+<html>
+    <head>
+        <title>san ben</title>
+        <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <style>
+            .flex {
+            display: flex;
+            }
+            .flex-c {
+            display: flex;
+            justify-content: center;
+            }
+            .flex-b {
+            display: flex;
+            justify-content: space-between;
+            }
+            .flex-a {
+            display: flex;
+            justify-content: space-around;
+            }
+            .flex-end{
+            justify-content: flex-end;
+            }
+
+            .flex-middle {
+            display: flex;
+            align-items: center;
+            }
+
+            .flex-col {
+            display: flex;
+            flex-direction: column;
+            }
+
+            .flex-cm {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+            .flex-wrap{
+            flex-wrap: wrap;
+            }
+
+        </style>
+    </head>
+    <body>
+        hello sanben !!!
+        <div id="app">
+            <div>
+                <div>
+                    api接口：<input  v-model="api"  />
+                </div>
+                <div>
+                    method：
+                    <input v-model="method" type="radio" value="GET" name="method" /> GET
+                    <input v-model="method" type="radio" value="POST" name="method" /> POST
+                </div>
+
+                <div>
+                    数据类型:
+                    <input v-model="data_type" type="radio" value="JSON" name="data_type" /> JSON
+                    <input v-model="data_type" type="radio" value="LIST" name="data_type" /> LIST
+                </div>
+                <div>
+                    <div>接口数据： </div>
+                    <!-- <data-list :data="mockData" /> -->
+
+                    <data-list 
+                        v-for="(arry_item, index) in (mockData || [])" 
+                        :key="index"
+                        :data="arry_item" />
+                </div>
+                
+                <div>
+                    <button v-on:click="createData">提交</button>
+                    <!-- <button v-on:click="modifyData">修改</button> -->
+                    <button v-on:click="viewData">查看数据</button>
+
+                    <button v-on:click="addListItem(mockData)">添加项目</button>
+                </div>
+                <div>
+                   
+                </div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+
+        <script>
+            function createJson(array) {
+                return array
+                // return array.reduce((acc, data) => 
+                // {   
+                //     let value = null;
+                //     if ( data.data_type_value === "object") {
+                //         value = createJson(data.value)
+                //     } else if (data.data_type_value === "array") {
+                //         value = data.value.map(arr_item => createJson(arr_item))
+                //     } else {
+                //         value = data.value
+                //     }
+
+                //     return {
+                //         ...acc, 
+                //         [data.key]: value,
+                //         data_type_value: data.data_type_value
+                //     }
+                // }, {})
+            }
+            const temp = {
+                key: null, 
+                value: null,
+                data_type_value: 'string'
+            }
+
+            Vue.component('data-list', {
+                template: `
+                    <ul>
+                        <li v-for="(item, index) in (data || [])"   v-bind:key="index">
+                            <div class="flex">
+                                <div><input v-model="item.key" /></div>
+                                <div v-if="item.data_type_value !== 'array' && item.data_type_value !== 'object'">
+                                    <input  v-model="item.value" />
+                                </div>
+                                <div>
+                                    <select :value="item.data_type_value" v-on:change="(e) => onTypeChange(e, item, index)">
+                                        <option value="string">String</option>
+                                        <option value="boolean">Boolean</option>
+                                        <option value="number">Number</option>
+                                        <option value="array">Array</option>
+                                        <option value="object">Object</option>
+                                    </select>
+                                </div>
+                            </div>
+                           
+                            <div v-if="item.data_type_value === 'object'"
+                                style="paddingLeft:30px">
+                                <data-list :data="item.value" />
+                            </div>
+                            <div v-if="item.data_type_value === 'array'"
+                                style="paddingLeft:30px">
+
+                                <data-list 
+                                    v-for="(arry_item, index) in (item.value || [])" 
+                                    :key="index"
+                                    :data="arry_item" />
+                                
+                                <button v-on:click="addListItem(item.value)">添加项目</button>
+                            </div>
+                        </li>
+                        <li>
+                            <button v-on:click="addProperty(data)">添加字段</button>
+                            
+                        </li>
+                    </ul>
+                `,
+                
+                props: ['data', 'title'],
+                data() {
+                    return {}
+                },
+                created() {
+                    console.log(this.data)
+                },
+                methods: {
+                    addProperty(item) {
+                        item.push({...temp})
+                    },
+                    onTypeChange(e, item, index) {
+                        console.log(e.target.value)
+                        let type = e.target.value
+                        item.data_type_value = type
+
+                        if (type === 'object') {
+                            item.value = [
+                                {...temp}
+                            ]
+                        } else if (type === 'array') {
+                            item.value = [
+                                [{...temp}]
+                            ]
+                        }
+                    },
+                    addListItem(item) {
+                        item.push([{...temp}])
+                    }
+                }
+            })
+
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    api: 'test',
+                    method: 'GET',
+                    data_type: 'JSON',
+                    mockData: [[{...temp}]],
+                },
+                methods: {
+                    createData() {
+                        axios.post('/api/create', {
+                            api: this.api,
+                            method: this.method,
+                            mockData: {
+                                type: this.data_type,
+                                data: this.mockData
+                            }
+                            // mockData: this.mockData
+                        }).then(res => {
+                            console.log(res)
+                        })
+                    },
+                    modifyData() {
+                        axios.post('/api/create', {
+                            api: this.api,
+                            mockData: this.mockData
+                        }).then(res => {
+                            console.log(res)
+                        })
+                    },
+                    viewData() {
+                        let url = this.api
+                        axios.get('/api-mock/' + this.api, {
+                            api: this.api,
+                            mockData: this.mockData
+                        }).then(res => {
+                            console.log(res)
+                        })
+                    },
+                    addListItem() {
+                        this.mockData.push([{...temp}])
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
