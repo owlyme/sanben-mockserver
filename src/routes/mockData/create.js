@@ -15,7 +15,9 @@ router.post('/create', async ctx => {
   let filePath = resolve(api)
   let res = fs.ensureFileSync(filePath)
   res = await fs.writeJson(filePath, mockData)
-  return (ctx.body = res);
+  return (ctx.body = {
+    code: 1
+  });
 });
 
 router.get('/modify', async ctx => {
