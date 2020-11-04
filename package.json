@@ -59,9 +59,9 @@
     "start:p": "cross-env NODE_ENV=production nodemon index.js",
     "start": "cross-env NODE_ENV=development nodemon index.js",
     "devnodemon": "cross-env NODE_ENV=development PORT=8092 nodemon index.js",
-    "dev": "pm2 start ecosystem.config.js --only dev-yktserver",
-    "test": "pm2 start ecosystem.config.js --only test-yktserver",
-    "prd": "pm2 start ecosystem.config.js --only prod-yktserver",
+    "dev": "pm2 start ecosystem.config.js --only dev-sanben-mock",
+    "test": "pm2 start ecosystem.config.js --only test-sanben-mock",
+    "prd": "pm2 start ecosystem.config.js --only prod-sanben-mock",
     "lint": "eslint --ext .js src",
     "lint:fix": "eslint --fix --ext .js src"
   },
