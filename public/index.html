@@ -20,7 +20,15 @@
     <body>
         <div id="app">
             <div>
-                <div>
+                <Row>
+                    <i-col span="3">
+                        项目名(不要使用汉字,空格，特殊符号)：
+                    </i-col>
+                    <i-col span="16">
+                        <i-input  v-model="projectName"  placeholder="请输入项目名"/>
+                    </i-col>
+                </Row>
+
                 <Row>
                     <i-col span="3">
                         接口名：
@@ -36,7 +44,7 @@
                         <i-button type="primary"  v-show="data_type==='LIST'" v-on:click="addListItem(mockData)">添加项目</i-button>
                     </i-col>
                 </Row>
-            </div>
+         
                 <Row>
                     <i-col span="3">
                         接口method：
@@ -121,6 +129,28 @@
                     }, {})
             }
 
+            function isValidatorProjectName(str) {
+                let bool = true
+                if (!str) {
+                    bool = false
+                    alert('项目名必填')
+                } else if (/[\u4E00-\u9FFF]|\s|#|\$|%|\^|\*|@|\//g.test(str)) {
+                    bool = false
+                    alert('项目名不要使用汉字,空格,特殊符号')
+                }
+                return bool
+            }
+            function isValidatorApi(str) {
+                let bool = true
+                if (!str) {
+                    bool = false
+                    alert('api必填')
+                } else if (/^\/|[\u4E00-\u9FFF]|\s|#|$|%|\^|\*|@/g.test(str)) {
+                    bool = false
+                    alert('api不要使用汉字,空格,特殊符号以及"/"开头')
+                }
+                return bool
+            }
             Vue.component('data-list', {
                 template: `
                     <ul>
@@ -223,6 +253,7 @@
             var app = new Vue({
                 el: '#app',
                 data: {
+                    projectName: localStorage.projectName || '',
                     api: 'test',
                     method: 'GET',
                     data_type: localStorage.data_type || 'JSON',
@@ -241,6 +272,10 @@
                     }
                 },
                 watch: {
+                    projectName(nv) {
+                        localStorage.projectName = nv
+                    },
+
                     data_type(nv) {
                         localStorage.data_type = nv
                     },
@@ -253,44 +288,41 @@
            
                 methods: {
                     createData() {
+                       if(isValidatorProjectName(this.projectName) && isValidatorApi(this.api)){
                         axios.post('/api/create', {
-                            api: this.api,
-                            method: this.method,
+                            api: `${this.projectName}/${this.api}`,
+                            method: this.method.trim(),
                             mockData: {
                                 type: this.data_type,
                                 data: this.mockData
                             }
                             // mockData: this.mockData
                         }).then(res => {
+                            alert("添加成功")
                             console.log(res)
                         })
-                    },
-                    modifyData() {
-                        axios.post('/api/create', {
-                            api: this.api,
-                            mockData: this.mockData
-                        }).then(res => {
-                            console.log(res)
-                        })
+                       }
                     },
                     viewData() {
-                        let url = this.api
-                        let method = this.method.toLowerCase()
-                        let param = method === 'get' ? {
-                                param: {
+                        if(isValidatorProjectName(this.projectName) && isValidatorApi(this.api)){
+                            let url = this.api
+                            let method = this.method.toLowerCase()
+                            let param = method === 'get' ? {
+                                    param: {
+                                        api: this.api,
+                                        mockData: this.mockData
+                                    }
+                                } :  {
                                     api: this.api,
                                     mockData: this.mockData
-                                }
-                            } :  {
-                                api: this.api,
-                                mockData: this.mockData
-                            };
-                            
-                        axios[method]('/api-mock/' + this.api, {
-                            ...param
-                        }).then(res => {
-                            console.log(res)
-                        })
+                                };
+                                
+                            axios[method](`/api-mock/${this.projectName}/${this.api}`, {
+                                ...param
+                            }).then(res => {
+                                console.log(res)
+                            })
+                        }
                     },
                     addListItem() {
                         this.mockData.push([{...temp}])
