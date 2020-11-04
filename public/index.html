@@ -6,6 +6,9 @@
         <script type="text/javascript" src="http://vuejs.org/js/vue.min.js"></script>
         <script type="text/javascript" src="http://unpkg.com/iview/dist/iview.min.js"></script>
         <style>
+            body{
+                padding: 10px;
+            }
             .flex {
             display: flex;
             }
@@ -145,7 +148,7 @@
                 if (!str) {
                     bool = false
                     alert('api必填')
-                } else if (/^\/|[\u4E00-\u9FFF]|\s|#|$|%|\^|\*|@/g.test(str)) {
+                } else if (/^\/|[\u4E00-\u9FFF]|\s|#|\$|%|\^|\*|@/g.test(str)) {
                     bool = false
                     alert('api不要使用汉字,空格,特殊符号以及"/"开头')
                 }
