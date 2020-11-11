@@ -226,11 +226,9 @@
                             <div class="flex" style="margin: 5px 0">
                                 <div class="flex"><i-input size="small" v-model="item.key"
                                     placeholder="请输入key" /><div>:</div></div>
-
                                 <div class="flex" v-if="item.data_type_value !== 'array' && item.data_type_value !== 'object'">
                                     <i-input size="small"  v-model="item.value" placeholder="请输入value" />
                                 </div>
-
                                 <div class="flex">
                                     <i-select
                                     size="small"
@@ -247,27 +245,22 @@
                                      type="primary"
                                      v-show="index + 1 === data.length"
                                      v-on:click="addProperty(data)">添加字段</i-button>
-
                                      <i-button size="small"
                                      type="primary"
                                      v-show="item.data_type_value === 'array'"
                                      v-on:click="addListItem(item.value)">添加项目</i-button>
-
                                     <i-button  size="small"
                                     class="delete-item"
                                     v-if="data.length > 1"
                                      v-on:click="removeProperty(data, index)">删除字段</i-button>
                                 </div>
                             </div>
-
                             <div v-if="item.data_type_value === 'object'"
                                 style="paddingLeft:30px">
                                 <data-list :data="item.value" />
                             </div>
-
                             <div v-if="item.data_type_value === 'array'"
                                 style="paddingLeft:30px">
-
                                 <template v-for="(arry_item, index) in (item.value || [])"  >
                                     <div>
                                         sub list[{{index}}]

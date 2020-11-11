@@ -1,0 +1,52 @@
+<html lang="en"><head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>prd</title>
+	<script>
+		let UPLOADED_FILES = []
+    let total = 0
+
+		function uploadLargeFile() {
+			let largeFile  = document.getElementById('file').files[0]
+			if (!largeFile) {
+				alert("请选择文件")
+				return
+			}
+			UPLOADED_FILES = [];
+      let fileName = largeFile.name
+
+			upload(largeFile, fileName, (res) => {
+        console.log(res)
+      })
+
+		}
+
+		function upload(blob, fileName, callback) {
+			const httpxml = new XMLHttpRequest();
+			const formData = new FormData();
+			formData.append('file', blob, fileName)
+			httpxml.onreadystatechange =function () {
+				if(httpxml.readyState==4 && httpxml.status==200){
+					let res = httpxml.response
+					console.log(JSON.parse(res))
+					callback && callback(JSON.parse(res))
+				} else {
+					// console.log("发生了错误");
+				}
+			}
+			httpxml.open("post","/api/upload",true);
+			httpxml.setRequestHeader("enctype","multipart/form-data");
+			httpxml.send(formData);
+		}
+
+
+
+	</script>
+</head>
+<body>
+	<div>
+		<input type="file" name="file" id="file" >
+		<button type="button" onclick="uploadLargeFile()">上传</button>
+	</div>
+
+ </body></html>
