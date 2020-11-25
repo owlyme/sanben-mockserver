@@ -23,7 +23,9 @@ function createJson(array) {
     if (data.data_type_value === "object") {
       value = createJson(data.value);
     } else if (data.data_type_value === "array") {
-      value = data.value.map(arr_item => createJson(arr_item));
+      value = data.value.map(arr_item =>
+        arr_item.null ? arr_item.null : createJson(arr_item)
+      );
     } else {
       value = data.value;
     }
