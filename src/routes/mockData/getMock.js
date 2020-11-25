@@ -7,6 +7,16 @@ function resolve(filename) {
 }
 const router = new Router();
 
+function datTypeChange(data, type) {
+  if (type === "number") {
+    return Number(data);
+  }
+  if (type === "boolean") {
+    return Boolean(data);
+  }
+  return data;
+}
+
 function createJson(array) {
   return array.reduce((acc, data) => {
     let value = null;
@@ -20,7 +30,7 @@ function createJson(array) {
 
     return {
       ...acc,
-      [data.key]: value
+      [data.key]: datTypeChange(value, data.data_type_value)
       // data_type_value: data.data_type_value
     };
   }, {});
