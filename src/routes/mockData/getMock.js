@@ -49,8 +49,7 @@ router.post("/*", async ctx => {
   }
 
   return (ctx.body = {
-    code: 1,
-    data: mockdata
+    ...mockdata
   });
 });
 
