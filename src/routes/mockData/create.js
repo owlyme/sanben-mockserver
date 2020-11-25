@@ -1,6 +1,5 @@
 import Router from 'koa-router';
 import path from 'path'
-import createfile from '../../utils/createfile'
 const fs = require('fs-extra')
 const router = new Router();
 
