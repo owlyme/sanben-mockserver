@@ -29,7 +29,7 @@ function createJson(array) {
 
 router.post('/*', async ctx => {
   let relativePath = ctx.url.replace(/\/api-mock\//, '')
-  // let filePath = relativePath.replace(/\//g, '_')
+
   let filePath =resolve(relativePath)
   const {type, data} = await fs.readJson(filePath)
   let mockdata = null
@@ -42,28 +42,40 @@ router.post('/*', async ctx => {
   return (ctx.body = {
     code: 1,
     data: mockdata
+  });
+});
+
+router.get('/jsondata/*', async ctx => {
+  console.log('jsondata', 'qwwwwwwwwwwwwwwww')
+  let relativePath = ctx.url.replace(/\/api-mock\/jsondata\//, '')
+  let filePath =resolve(relativePath)
+  const {type, data} = await fs.readJson(filePath)
+  console.log(filePath)
+  return (ctx.body = {
+    code: 1,
+    type,
+    data
   });
 });
 
 router.get('/*', async ctx => {
   let relativePath = ctx.url.replace(/\/api-mock\//, '')
-  // let filePath = relativePath.replace(/\//g, '_')
   let filePath =resolve(relativePath)
   const {type, data} = await fs.readJson(filePath)
   let mockdata = null
   if (type === "JSON") {
     mockdata= createJson(data[0])
   } else {
-    mockdata= data.map(createJson)
+    mockdata= data.map((i, index) => ({
+      ...createJson(i),
+      id: index
+    }))
   }
- 
+
   return (ctx.body = {
     code: 1,
     data: mockdata
   });
 });
-
-
-
 
 export default router;

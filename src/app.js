@@ -84,7 +84,8 @@ mockData(app)
 
 // error-handling
 app.on('error', (err, ctx) => {
-  logger.error('server error', err, ctx);
+  console.log(err)
+  // logger.error('server error', err, ctx);
 });
 
 module.exports = app;

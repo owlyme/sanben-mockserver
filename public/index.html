@@ -2,9 +2,10 @@
     <head>
         <title>san ben</title>
         <link rel="stylesheet" type="text/css" href="http://unpkg.com/iview/dist/styles/iview.css">
-        
+
         <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
         <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.min.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/vue-router/3.1.5/vue-router.js"></script>
         <script type="text/javascript" src="http://unpkg.com/iview/dist/iview.min.js"></script>
         <style>
             body{
@@ -40,84 +41,7 @@
     </head>
     <body>
         <div id="app">
-            <div>
-                <div class="border">
-                    <Row>
-                        <i-col span="3">
-                            项目名(不要使用汉字,空格，特殊符号)：
-                        </i-col>
-                        <i-col span="16">
-                            <i-input  v-model="projectName"  placeholder="请输入项目名"/>
-                        </i-col>
-                    </Row>
-
-                    <Row>
-                        <i-col span="3">
-                            接口名：
-                        </i-col>
-                        <i-col span="16">
-                            <i-input  v-model="api"  />
-                        </i-col>
-                    </Row>
-
-                    <Row class="margin">
-                        <i-col span="3">
-                            接口method：
-                        </i-col>
-                        <i-col span="6">
-                            <input v-model="method" type="radio" value="GET" name="method" /> GET
-                            <input v-model="method" type="radio" value="POST" name="method" /> POST
-                        </i-col>
-                    </Row>
-
-                    <Row class="margin">
-                        <i-col span="3">
-                            数据类型:
-                        </i-col>
-                        <i-col span="21">
-                            <input v-model="data_type" type="radio" value="JSON" name="data_type" /> JSON
-                            <input v-model="data_type" type="radio" value="LIST" name="data_type" /> LIST
-                        </i-col>
-                    </Row>
-
-
-
-                    <Row class="margin">
-                        <i-col span="16" offset="3">
-                            <i-button  size="small"type="primary"  v-on:click="createData">提交</i-button>
-                            <i-button  size="small"type="primary"  v-on:click="viewData">查看数据</i-button>
-                            <i-button  size="small"type="primary"  v-show="data_type==='LIST'"
-                                v-on:click="addListItem(mockData)">添加项目</i-button>
-                        </i-col>
-                    </Row>
-                    <Row>
-                        <i-col span="3">
-                            接口数据：
-                        </i-col>
-                        <i-col span="16">
-                            <template v-for="(arry_item, index) in (mockData || [])" >
-                                <div v-show="data_type === 'LIST'">
-                                    LIST[{{index}}]
-                                    <i-button
-                                        v-show="mockData.length !== 1"
-                                        v-on:click="removeListItem(mockData, index)">删除项目</i-button>
-                                </div>
-                                <data-list
-                                :key="index"
-                                :data="arry_item" />
-                            </template>
-                        </i-col>
-                    </Row>
-                </div>
-                <Row class="border">
-                    <i-col span="3">
-                       数据预览：
-                    </i-col>
-                    <i-col span="16">
-                        <pre>{{viewMockData}}</pre>
-                    </i-col>
-                </Row>
-            </div>
+            <router-view></router-view>
         </div>
 
         <script>
@@ -190,6 +114,9 @@
                 }
                 return  storageData
             }
+            function clearMockData() {
+                localStorage.removeItem("mockData")
+            }
 
             function addListItem(mockData) {
                 let firstItem = mockData[0]
@@ -219,6 +146,286 @@
                     }
                 })
             }
+
+
+            let pageCreate = Vue.component('page-create', {
+                template: `<div>
+                    <div class="border">
+                        <Row>
+                            <i-col span="3">
+                                项目名(不要使用汉字,空格，特殊符号)：
+                            </i-col>
+                            <i-col span="16">
+                                <i-input  v-model="projectName"  placeholder="请输入项目名"/>
+                            </i-col>
+                        </Row>
+
+                        <Row>
+                            <i-col span="3">
+                                接口名：
+                            </i-col>
+                            <i-col span="16">
+                                <i-input  v-model="api"  />
+                            </i-col>
+                        </Row>
+
+                        <Row class="margin">
+                            <i-col span="3">
+                                接口method：
+                            </i-col>
+                            <i-col span="6">
+                                <input v-model="method" type="radio" value="GET" name="method" /> GET
+                                <input v-model="method" type="radio" value="POST" name="method" /> POST
+                            </i-col>
+                        </Row>
+
+                        <Row class="margin">
+                            <i-col span="3">
+                                数据类型:
+                            </i-col>
+                            <i-col span="21">
+                                <input v-model="data_type" type="radio" value="JSON" name="data_type" /> JSON
+                                <input v-model="data_type" type="radio" value="LIST" name="data_type" /> LIST
+                            </i-col>
+                        </Row>
+
+
+                        <Row class="margin">
+                            <i-col span="16" offset="3">
+                                <i-button  size="small"type="primary"  v-on:click="createData">提交</i-button>
+                                <i-button  size="small"type="primary"  v-on:click="viewData">查看数据</i-button>
+                                <i-button  size="small"type="primary"  v-on:click="clear">清空数据</i-button>
+                                <i-button  size="small"type="primary"  v-show="data_type==='LIST'"
+                                    v-on:click="addListItem(mockData)">添加项目</i-button>
+                            </i-col>
+                        </Row>
+                        <Row>
+                            <i-col span="3">
+                                接口数据：
+                            </i-col>
+                            <i-col span="16">
+                                <template v-for="(arry_item, index) in (mockData || [])" >
+                                    <div v-show="data_type === 'LIST'">
+                                        LIST[{{index}}]
+                                        <i-button
+                                            v-show="mockData.length !== 1"
+                                            v-on:click="removeListItem(mockData, index)">删除项目</i-button>
+                                    </div>
+                                    <data-list
+                                    :key="index"
+                                    :data="arry_item" />
+                                </template>
+                            </i-col>
+                        </Row>
+                    </div>
+                    <Row class="border">
+                        <i-col span="3">
+                        数据预览：
+                        </i-col>
+                        <i-col span="16">
+                            <pre>{{viewMockData}}</pre>
+                        </i-col>
+                    </Row>
+                </div>
+                `,
+                data() {
+                    return {
+                        projectName: localStorage.projectName || '',
+                        api: 'test',
+                        method: 'GET',
+                        data_type: localStorage.data_type || 'JSON',
+                        mockData: initMockdata()
+                    }
+                },
+                computed: {
+                    viewMockData() {
+                        let data = null
+                        if (this.data_type === "JSON") {
+                            data = createJson(this.mockData[0])
+                        } else {
+                            data = this.mockData.map(createJson)
+                        }
+                        return data
+                    }
+                },
+                watch: {
+                    projectName(nv) {
+                        localStorage.projectName = nv
+                    },
+
+                    data_type(nv) {
+                        localStorage.data_type = nv
+                    },
+                    mockData(nv) {
+                        console.log('mockData', nv)
+                        localStorage.mockData = JSON.stringify(nv)
+                    }
+                },
+                created() {
+                    this.getData()
+                },   
+                methods: {
+                    getData() {
+                        let api = this.$route.query.api
+                        if (!api) return;
+                        axios.get(`/api-mock/jsondata/${localStorage.projectName}/${api}`).then(res => {
+                            this.mockData = res.data.data
+                            this.projectName = localStorage.projectName || ''
+                            this.api = api
+                            this.data_type = res.data.type || 'JSON'
+                        })
+                    },
+                    createData() {
+                       if(isValidatorProjectName(this.projectName) && isValidatorApi(this.api)){
+                        axios.post('/api/create', {
+                            api: `${this.projectName}/${this.api}`,
+                            method: this.method.trim(),
+                            mockData: {
+                                type: this.data_type,
+                                data: this.mockData
+                            }
+                            // mockData: this.mockData
+                        }).then(res => {
+                            alert("添加成功")
+                            console.log(res)
+                        })
+                       }
+                    },
+                    viewData() {
+                        if(isValidatorProjectName(this.projectName) && isValidatorApi(this.api)){
+                            let url = this.api
+                            let method = this.method.toLowerCase()
+                            let param = method === 'get' ? {
+                                    param: {
+                                        api: this.api,
+                                        mockData: this.mockData
+                                    }
+                                } :  {
+                                    api: this.api,
+                                    mockData: this.mockData
+                                };
+
+                            axios[method](`/api-mock/${this.projectName}/${this.api}`, {
+                                ...param
+                            }).then(res => {
+                                console.log(res)
+                            })
+                        }
+                    },
+                    addMultiplItem(mockData, e){
+                        let firstItem = mockData[0]
+                        let num = Number(e)
+
+                        while (num && mockData.length !== num) {
+                            let len = mockData.length
+                            if (len > num) {
+                                mockData.pop()
+                            } else if (len < num) {
+                                mockData.push(firstItem)
+                            }
+                        }
+                    },
+                    addListItem(mockData) {
+                        addListItem.call(this, mockData)
+                    },
+                    removeListItem(data, index) {
+                        data.splice(index, 1)
+                    },
+                    clear() {
+                        clearMockData()
+                        this.mockData = initMockdata()
+                    }
+                }
+            })
+
+            let pageIndex = Vue.component('page-index', {
+                template: `
+                    <ul>
+                        <li class="data-item" v-for="(item, index) in list" v-bind:key="index" @click="getPorjectPath(item)">
+                            {{item}}
+                        </li>
+                    </ul>
+                `,
+
+                data() {
+                    return {
+                        list: []
+                    }
+                },
+                created() {
+                    this.getPorject()
+                },
+                methods: {
+                    getPorject() {
+                        axios.get(`/mock/project`).then(res => {
+                            this.list = res.data.data
+                        })
+                    },
+                    getPorjectPath(project) {
+                        localStorage.projectName = project
+                        this.$router.push({
+                            name: 'path',
+                            query: {
+                                project
+                            }
+                        })
+                    },
+                }
+            })
+            
+            let pagePath = Vue.component('page-path', {
+                template: `
+                    <ul>
+                        <li class="data-item" v-for="(item, index) in list" v-bind:key="index" @click="toCreate(item)">
+                            {{item}}
+                        </li>
+                    </ul>
+                `,
+
+                data() {
+                    return {
+                        list: []
+                    }
+                },
+                created() {
+                    this.getPorject(this.$route.query.project)
+                },
+                methods: {
+                    getPorject(project) {
+                        axios.get(`/mock/project/${project}`).then(res => {
+                            this.list = res.data.data
+                        })
+                    },
+                    toCreate(api) {
+                        this.$router.push({
+                            name: 'create',
+                            query: {
+                                api
+                            }
+                        })
+                    },
+                }
+            })
+            
+            const router = new VueRouter({
+                routes: [
+                    {
+                        path: '/',
+                        name: 'index',
+                        component: pageIndex,
+                    },
+                    {
+                        path: '/create',
+                        name: 'create',
+                        component: pageCreate,
+                    },
+                    {
+                        path: '/path',
+                        name: 'path',
+                        component: pagePath,
+                    },
+                ]
+            })
 
             Vue.component('data-list', {
                 template: `
@@ -318,97 +525,7 @@
 
             var app = new Vue({
                 el: '#app',
-                data: {
-                    projectName: localStorage.projectName || '',
-                    api: 'test',
-                    method: 'GET',
-                    data_type: localStorage.data_type || 'JSON',
-                    mockData: initMockdata()
-                },
-                computed: {
-                    viewMockData() {
-                        let data = null
-                        if (this.data_type === "JSON") {
-                            data = createJson(this.mockData[0])
-                        } else {
-                            data = this.mockData.map(createJson)
-                        }
-                        return data
-                    }
-                },
-                watch: {
-                    projectName(nv) {
-                        localStorage.projectName = nv
-                    },
-
-                    data_type(nv) {
-                        localStorage.data_type = nv
-                    },
-                    mockData(nv) {
-                        console.log('mockData', nv)
-                        localStorage.mockData = JSON.stringify(nv)
-                    }
-                },
-
-
-                methods: {
-                    createData() {
-                       if(isValidatorProjectName(this.projectName) && isValidatorApi(this.api)){
-                        axios.post('/api/create', {
-                            api: `${this.projectName}/${this.api}`,
-                            method: this.method.trim(),
-                            mockData: {
-                                type: this.data_type,
-                                data: this.mockData
-                            }
-                            // mockData: this.mockData
-                        }).then(res => {
-                            alert("添加成功")
-                            console.log(res)
-                        })
-                       }
-                    },
-                    viewData() {
-                        if(isValidatorProjectName(this.projectName) && isValidatorApi(this.api)){
-                            let url = this.api
-                            let method = this.method.toLowerCase()
-                            let param = method === 'get' ? {
-                                    param: {
-                                        api: this.api,
-                                        mockData: this.mockData
-                                    }
-                                } :  {
-                                    api: this.api,
-                                    mockData: this.mockData
-                                };
-
-                            axios[method](`/api-mock/${this.projectName}/${this.api}`, {
-                                ...param
-                            }).then(res => {
-                                console.log(res)
-                            })
-                        }
-                    },
-                    addMultiplItem(mockData, e){
-                        let firstItem = mockData[0]
-                        let num = Number(e)
-
-                        while (num && mockData.length !== num) {
-                            let len = mockData.length
-                            if (len > num) {
-                                mockData.pop()
-                            } else if (len < num) {
-                                mockData.push(firstItem)
-                            }
-                        }
-                    },
-                    addListItem(mockData) {
-                        addListItem.call(this, mockData)
-                    },
-                    removeListItem(data, index) {
-                        data.splice(index, 1)
-                    }
-                }
+                router,
             })
         </script>
     </body>

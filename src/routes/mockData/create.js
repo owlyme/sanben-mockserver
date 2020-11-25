@@ -42,7 +42,7 @@ function savefile(ctx) {
         fs.moveSync(path, uploadDir(name), { overwrite: true });
         resolve({
           code: 200,
-          path: `/public/upload/${name}`
+          path: `/upload/${name}`
         });
       } catch (e) {
         resolve({
@@ -77,7 +77,6 @@ timingClearUpload();
 router.post("/upload", async ctx => {
   try {
     let res = await savefile(ctx);
-
     return (ctx.body = res);
   } catch (e) {
     return (ctx.body = e.message);
