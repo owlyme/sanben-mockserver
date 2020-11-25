@@ -57,7 +57,7 @@ router.get("/jsondata/*", async ctx => {
 });
 
 router.get("/*", async ctx => {
-  let relativePath = ctx.url.replace(/\/api-mock\//, "");
+  let relativePath = ctx.url.replace(/\/api-mock\//, "").replace(/\?.*$/g, "");
   let filePath = resolve(relativePath);
   const { type, data } = await fs.readJson(filePath);
   let mockdata = null;
