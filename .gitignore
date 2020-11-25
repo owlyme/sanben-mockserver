@@ -2,7 +2,7 @@
 /.vscode
 /logs
 /cacheFiles
-
+/mockdata
 # misc
 .DS_Store
 npm-debug.log
