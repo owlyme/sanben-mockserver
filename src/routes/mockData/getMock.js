@@ -19,13 +19,14 @@ function datTypeChange(data, type) {
 
 function createJson(array) {
   return array.reduce((acc, data) => {
+    if (data.key === null || data.key === "") {
+      return data.value;
+    }
     let value = null;
     if (data.data_type_value === "object") {
       value = createJson(data.value);
     } else if (data.data_type_value === "array") {
-      value = data.value.map(arr_item =>
-        arr_item.null ? arr_item.null : createJson(arr_item)
-      );
+      value = data.value.map(arr_item => createJson(arr_item));
     } else {
       value = data.value;
     }
@@ -56,7 +57,6 @@ router.post("/*", async ctx => {
 });
 
 router.get("/jsondata/*", async ctx => {
-  console.log("jsondata", "qwwwwwwwwwwwwwwww");
   let relativePath = ctx.url.replace(/\/api-mock\/jsondata\//, "");
   let filePath = resolve(relativePath);
   const { type, data } = await fs.readJson(filePath);
