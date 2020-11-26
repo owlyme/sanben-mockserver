@@ -47,8 +47,13 @@ router.post("/*", async ctx => {
   let mockdata = null;
   if (type === "JSON") {
     mockdata = createJson(data[0]);
+  } else if (type === "LIST") {
+    mockdata = data.map((i, index) => ({
+      ...createJson(i),
+      id: index
+    }));
   } else {
-    mockdata = data.map(createJson);
+    mockdata = data;
   }
 
   return (ctx.body = {
@@ -72,13 +77,16 @@ router.get("/*", async ctx => {
   let filePath = resolve(relativePath);
   const { type, data } = await fs.readJson(filePath);
   let mockdata = null;
+
   if (type === "JSON") {
     mockdata = createJson(data[0]);
-  } else {
+  } else if (type === "LIST") {
     mockdata = data.map((i, index) => ({
       ...createJson(i),
       id: index
     }));
+  } else {
+    mockdata = data;
   }
 
   return (ctx.body = {
